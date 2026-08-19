@@ -1,0 +1,15 @@
+services:
+  quota-dashboard:
+    build: .
+    restart: unless-stopped
+    environment:
+      SUB2API_BASE_URL: ${SUB2API_BASE_URL:?set SUB2API_BASE_URL}
+      SUB2API_ADMIN_KEY: ${SUB2API_ADMIN_KEY:?set SUB2API_ADMIN_KEY}
+      VIEWER_PASSWORD: ${VIEWER_PASSWORD:?set VIEWER_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET}
+      PORT: ${PORT:-4173}
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-30}
+      SESSION_DAYS: ${SESSION_DAYS:-30}
+      TRUST_PROXY: ${TRUST_PROXY:-0}
+    ports:
+      - "${PORT:-4173}:${PORT:-4173}"

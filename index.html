@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="quota">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="拼车账号额度看板" />
+    <title>拼车额度</title>
+  </head>
+  <body class="min-h-screen bg-base-200 text-base-content">
+    <section id="login-view" class="grid min-h-screen place-items-center px-4 py-10">
+      <div class="card w-full max-w-sm border border-base-300 bg-base-100 shadow-sm">
+        <div class="card-body gap-5 p-6 sm:p-8">
+          <div class="flex items-center gap-3">
+            <span class="grid size-10 place-items-center rounded-box bg-neutral text-neutral-content">
+              <i data-lucide="lock-keyhole" class="size-5" aria-hidden="true"></i>
+            </span>
+            <div>
+              <h1 class="text-xl font-semibold">拼车额度</h1>
+              <p class="mt-0.5 text-sm text-base-content/60">共享查看入口</p>
+            </div>
+          </div>
+
+          <form id="login-form" class="space-y-3">
+            <label class="input w-full">
+              <i data-lucide="shield-check" class="size-4 text-base-content/50" aria-hidden="true"></i>
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="查看密码"
+                autocomplete="current-password"
+                required
+              />
+            </label>
+            <p id="login-error" class="hidden text-sm text-error" role="alert"></p>
+            <button id="login-button" class="btn btn-block" type="submit">
+              <span id="login-spinner" class="loading loading-spinner loading-sm hidden"></span>
+              <span>进入看板</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <div id="dashboard-view" class="hidden min-h-screen">
+      <header class="border-b border-base-300 bg-base-100">
+        <div class="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+          <div class="min-w-0">
+            <h1 class="truncate text-lg font-semibold">拼车额度</h1>
+            <p id="sync-time" class="truncate text-xs text-base-content/55">正在同步</p>
+          </div>
+          <div class="flex shrink-0 items-center gap-1">
+            <button id="refresh-button" class="btn btn-ghost btn-square" type="button" title="刷新额度" aria-label="刷新额度">
+              <i data-lucide="refresh-cw" class="size-4" aria-hidden="true"></i>
+            </button>
+            <button id="logout-button" class="btn btn-ghost btn-square" type="button" title="退出登录" aria-label="退出登录">
+              <i data-lucide="log-out" class="size-4" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+        <div id="warning" role="alert" class="alert alert-warning alert-soft mb-5 hidden">
+          <i data-lucide="alert-circle" class="size-5" aria-hidden="true"></i>
+          <span id="warning-text"></span>
+        </div>
+
+        <section class="stats stats-vertical mb-6 w-full border border-base-300 bg-base-100 shadow-sm sm:stats-horizontal">
+          <div class="stat min-w-0 px-5 py-4">
+            <div class="stat-figure text-base-content/45"><i data-lucide="users" class="size-5" aria-hidden="true"></i></div>
+            <div class="stat-title text-xs">账号</div>
+            <div id="stat-accounts" class="stat-value text-2xl">-</div>
+            <div id="stat-active" class="stat-desc">-</div>
+          </div>
+          <div class="stat min-w-0 px-5 py-4">
+            <div class="stat-figure text-base-content/45"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></div>
+            <div class="stat-title text-xs">5 小时平均使用</div>
+            <div id="stat-5h" class="stat-value text-2xl">-</div>
+            <div class="stat-desc">所有已同步账号</div>
+          </div>
+          <div class="stat min-w-0 px-5 py-4">
+            <div class="stat-figure text-base-content/45"><i data-lucide="calendar-days" class="size-5" aria-hidden="true"></i></div>
+            <div class="stat-title text-xs">周平均使用</div>
+            <div id="stat-7d" class="stat-value text-2xl">-</div>
+            <div id="stat-risk" class="stat-desc">-</div>
+          </div>
+        </section>
+
+        <section class="mb-8" aria-labelledby="accounts-heading">
+          <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 id="accounts-heading" class="text-base font-semibold">账号额度</h2>
+              <p id="account-count" class="mt-1 text-xs text-base-content/55">-</p>
+            </div>
+            <label class="input input-sm w-full sm:w-64">
+              <i data-lucide="search" class="size-4 text-base-content/45" aria-hidden="true"></i>
+              <input id="search-input" type="search" placeholder="搜索账号" autocomplete="off" />
+            </label>
+          </div>
+
+          <div id="loading-state" class="flex min-h-64 items-center justify-center text-base-content/55">
+            <span class="loading loading-spinner loading-md" aria-label="正在加载"></span>
+          </div>
+
+          <div id="desktop-table" class="hidden overflow-x-auto rounded-box border border-base-300 bg-base-100 shadow-sm md:block">
+            <table class="table table-pin-rows">
+              <thead>
+                <tr>
+                  <th class="min-w-52">账号</th>
+                  <th class="w-28">容量</th>
+                  <th class="w-28">状态</th>
+                  <th class="min-w-80">5 小时额度</th>
+                  <th class="min-w-80">周额度</th>
+                  <th class="w-32 text-right">同步时间</th>
+                </tr>
+              </thead>
+              <tbody id="accounts-body"></tbody>
+            </table>
+          </div>
+
+          <div id="mobile-list" class="hidden space-y-3 md:hidden"></div>
+          <div id="empty-state" class="hidden min-h-48 place-items-center rounded-box border border-base-300 bg-base-100 text-sm text-base-content/55 shadow-sm">
+            没有匹配的账号
+          </div>
+        </section>
+
+        <section aria-labelledby="metrics-heading">
+          <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 id="metrics-heading" class="text-base font-semibold">用户近期使用</h2>
+              <p id="metrics-period" class="mt-1 text-xs text-base-content/55">近 24 小时</p>
+            </div>
+            <div class="max-w-full overflow-x-auto pb-1">
+              <div id="metrics-range" class="join whitespace-nowrap" role="group" aria-label="使用时间范围">
+                <button class="btn btn-sm join-item btn-neutral" type="button" data-range="24h" aria-pressed="true">近24小时</button>
+                <button class="btn btn-sm join-item" type="button" data-range="today" aria-pressed="false">今天</button>
+                <button class="btn btn-sm join-item" type="button" data-range="yesterday" aria-pressed="false">昨天</button>
+                <button class="btn btn-sm join-item" type="button" data-range="7d" aria-pressed="false">近7天</button>
+                <button class="btn btn-sm join-item" type="button" data-range="30d" aria-pressed="false">近30天</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="metrics-loading" class="flex min-h-36 items-center justify-center text-base-content/55">
+            <span class="loading loading-spinner loading-md" aria-label="正在加载近期用量"></span>
+          </div>
+          <div id="metrics-table" class="hidden overflow-x-auto rounded-box border border-base-300 bg-base-100 shadow-sm">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th class="min-w-36" aria-sort="none">
+                    <button class="flex w-full items-center gap-1 whitespace-nowrap text-left" type="button" data-metric-sort="username">
+                      用户名称 <i data-lucide="arrow-up-down" class="size-3.5" aria-hidden="true"></i>
+                    </button>
+                  </th>
+                  <th class="min-w-28 text-right" aria-sort="descending">
+                    <button class="ml-auto flex items-center gap-1 whitespace-nowrap" type="button" data-metric-sort="totalSpend">
+                      总消费 <i data-lucide="arrow-down" class="size-3.5" aria-hidden="true"></i>
+                    </button>
+                  </th>
+                  <th class="min-w-28 text-right" aria-sort="none">
+                    <button class="ml-auto flex items-center gap-1 whitespace-nowrap" type="button" data-metric-sort="totalTokens">
+                      总 Token <i data-lucide="arrow-up-down" class="size-3.5" aria-hidden="true"></i>
+                    </button>
+                  </th>
+                  <th class="min-w-28 text-right" aria-sort="none">
+                    <button class="ml-auto flex items-center gap-1 whitespace-nowrap" type="button" data-metric-sort="cacheHitRate">
+                      缓存命中率 <i data-lucide="arrow-up-down" class="size-3.5" aria-hidden="true"></i>
+                    </button>
+                  </th>
+                  <th class="min-w-24 text-right" aria-sort="none">
+                    <button class="ml-auto flex items-center gap-1 whitespace-nowrap" type="button" data-metric-sort="requests">
+                      总请求 <i data-lucide="arrow-up-down" class="size-3.5" aria-hidden="true"></i>
+                    </button>
+                  </th>
+                  <th class="min-w-32 text-right" aria-sort="none">
+                    <button class="ml-auto flex items-center gap-1 whitespace-nowrap" type="button" data-metric-sort="spendPerRequest">
+                      每请求消费 <i data-lucide="arrow-up-down" class="size-3.5" aria-hidden="true"></i>
+                    </button>
+                  </th>
+                  <th class="min-w-32 text-right" aria-sort="none">
+                    <button class="ml-auto flex items-center gap-1 whitespace-nowrap" type="button" data-metric-sort="tokensPerRequest">
+                      每请求 Token <i data-lucide="arrow-up-down" class="size-3.5" aria-hidden="true"></i>
+                    </button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="metrics-body"></tbody>
+            </table>
+          </div>
+          <div id="metrics-empty" class="hidden min-h-36 place-items-center rounded-box border border-base-300 bg-base-100 text-sm text-base-content/55 shadow-sm">
+            暂无用户数据
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: false;
+}
+
+@plugin "daisyui/theme" {
+  name: "quota";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+  --color-base-100: oklch(99% 0.002 90);
+  --color-base-200: oklch(96.5% 0.004 90);
+  --color-base-300: oklch(90.5% 0.006 90);
+  --color-base-content: oklch(23% 0.012 255);
+  --color-primary: oklch(53% 0.12 175);
+  --color-primary-content: oklch(98% 0.01 175);
+  --color-secondary: oklch(56% 0.12 245);
+  --color-secondary-content: oklch(98% 0.01 245);
+  --color-accent: oklch(70% 0.14 75);
+  --color-accent-content: oklch(23% 0.03 75);
+  --color-neutral: oklch(28% 0.014 255);
+  --color-neutral-content: oklch(97% 0.004 255);
+  --color-info: oklch(67% 0.13 235);
+  --color-info-content: oklch(20% 0.03 235);
+  --color-success: oklch(66% 0.14 155);
+  --color-success-content: oklch(18% 0.03 155);
+  --color-warning: oklch(78% 0.15 80);
+  --color-warning-content: oklch(22% 0.04 80);
+  --color-error: oklch(62% 0.19 28);
+  --color-error-content: oklch(98% 0.01 28);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
