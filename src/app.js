@@ -127,7 +127,7 @@ function formatTokens(value) {
 }
 
 function metricPercent(value) {
-  return `${Number(value).toFixed(2)}%`
+  return `${Number(value).toFixed(1)}%`
 }
 
 function dateTime(value, fallback = '等待同步') {
