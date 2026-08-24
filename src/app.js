@@ -122,8 +122,12 @@ function formatTokens(value) {
   const number = Number(value)
   if (number >= 1e9) return `${(number / 1e9).toFixed(2)}B`
   if (number >= 1e6) return `${(number / 1e6).toFixed(2)}M`
-  if (number >= 1e3) return `${(number / 1e3).toFixed(1)}K`
-  return Math.round(number).toLocaleString('zh-CN')
+  if (number >= 1e3) return `${(number / 1e3).toFixed(2)}K`
+  return number.toFixed(2)
+}
+
+function metricPercent(value) {
+  return `${Number(value).toFixed(2)}%`
 }
 
 function dateTime(value, fallback = '等待同步') {
@@ -399,13 +403,13 @@ function renderMetricRow(user) {
     name,
     metricCell(user.totalSpend, currency),
     metricCell(user.totalTokens, formatTokens),
-    metricCell(user.cacheHitRate, percent),
+    metricCell(user.cacheHitRate, metricPercent),
     metricCell(user.requests, (value) => value.toLocaleString('zh-CN')),
     metricCell(user.spendPerRequest, (value) =>
       new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-        minimumFractionDigits: 2,
+        minimumFractionDigits: 4,
         maximumFractionDigits: 4,
       }).format(value),
     ),
