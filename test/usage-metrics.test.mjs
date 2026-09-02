@@ -101,18 +101,18 @@ test('derives token totals and cache hit rate from usage stats', () => {
       totalTokens: 360,
       totalSpend: 1.5,
       spendPerMillionTokens: 4166.666666666667,
-      spendPerRequest: 0.75,
+      spendPerThousandRequests: 750,
       tokensPerRequest: 180,
       cacheHitRate: 43.3,
     },
   )
 })
 
-test('uses actual cost as a fallback and leaves per-request values empty without requests', () => {
+test('uses actual cost as a fallback and leaves request-based values empty without requests', () => {
   const metrics = metricsFromUsageStats({ total_actual_cost: 2.5, total_input_tokens: 100 })
   assert.equal(metrics.totalSpend, 2.5)
   assert.equal(metrics.spendPerMillionTokens, 25000)
-  assert.equal(metrics.spendPerRequest, null)
+  assert.equal(metrics.spendPerThousandRequests, null)
   assert.equal(metrics.tokensPerRequest, null)
 })
 

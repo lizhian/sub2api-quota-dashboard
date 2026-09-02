@@ -117,15 +117,6 @@ function currency(value) {
   }).format(value)
 }
 
-function preciseCurrency(value) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 4,
-    maximumFractionDigits: 4,
-  }).format(value)
-}
-
 function formatTokens(value) {
   if (!Number.isFinite(Number(value))) return '--'
   const number = Number(value)
@@ -412,10 +403,10 @@ function renderMetricRow(user) {
     name,
     metricCell(user.totalSpend, currency),
     metricCell(user.totalTokens, formatTokens),
-    metricCell(user.spendPerMillionTokens, preciseCurrency),
+    metricCell(user.spendPerMillionTokens, currency),
     metricCell(user.cacheHitRate, metricPercent),
     metricCell(user.requests, (value) => value.toLocaleString('zh-CN')),
-    metricCell(user.spendPerRequest, preciseCurrency),
+    metricCell(user.spendPerThousandRequests, currency),
     metricCell(user.tokensPerRequest, formatTokens),
   )
   return row
