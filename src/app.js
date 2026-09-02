@@ -403,9 +403,9 @@ function renderMetricRow(user) {
     name,
     metricCell(user.totalSpend, currency),
     metricCell(user.totalTokens, formatTokens),
-    metricCell(user.spendPerMillionTokens, currency),
-    metricCell(user.cacheHitRate, metricPercent),
     metricCell(user.requests, (value) => value.toLocaleString('zh-CN')),
+    metricCell(user.cacheHitRate, metricPercent),
+    metricCell(user.spendPerMillionTokens, currency),
     metricCell(user.spendPerThousandRequests, currency),
     metricCell(user.tokensPerRequest, formatTokens),
   )
