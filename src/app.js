@@ -117,6 +117,15 @@ function currency(value) {
   }).format(value)
 }
 
+function preciseCurrency(value) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 4,
+    maximumFractionDigits: 4,
+  }).format(value)
+}
+
 function formatTokens(value) {
   if (!Number.isFinite(Number(value))) return '--'
   const number = Number(value)
@@ -396,23 +405,17 @@ function renderMetricRow(user) {
   const name = node('th', 'font-medium', metricUsername(user))
   if (!user.available) {
     row.append(name)
-    for (let index = 0; index < 6; index += 1) row.append(node('td', 'text-right text-base-content/45', '--'))
+    for (let index = 0; index < 7; index += 1) row.append(node('td', 'text-right text-base-content/45', '--'))
     return row
   }
   row.append(
     name,
     metricCell(user.totalSpend, currency),
     metricCell(user.totalTokens, formatTokens),
+    metricCell(user.spendPerMillionTokens, preciseCurrency),
     metricCell(user.cacheHitRate, metricPercent),
     metricCell(user.requests, (value) => value.toLocaleString('zh-CN')),
-    metricCell(user.spendPerRequest, (value) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4,
-      }).format(value),
-    ),
+    metricCell(user.spendPerRequest, preciseCurrency),
     metricCell(user.tokensPerRequest, formatTokens),
   )
   return row

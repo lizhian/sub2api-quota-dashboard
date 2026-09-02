@@ -101,6 +101,7 @@ export function metricsFromUsageStats(stats) {
     promptTokens,
     totalTokens,
     totalSpend,
+    spendPerMillionTokens: totalTokens > 0 ? (totalSpend * 1_000_000) / totalTokens : null,
     spendPerRequest: requests > 0 ? totalSpend / requests : null,
     tokensPerRequest: requests > 0 ? totalTokens / requests : null,
     cacheHitRate:
